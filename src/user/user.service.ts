@@ -11,7 +11,6 @@ export class UserService {
 
     async create({email, name, password, birthAt}: CreateUserDTO) {
 
-        
         const data: any = {};
 
         if (birthAt) {

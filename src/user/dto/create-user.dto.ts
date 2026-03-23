@@ -2,7 +2,6 @@ import { IsDate, IsDateString, IsEmail, IsOptional, IsString, IsStrongPassword }
 
 export class CreateUserDTO {
 
-
     @IsString()
     name: string;
 
