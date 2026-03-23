@@ -9,9 +9,28 @@ export class UserService {
 
     constructor(private readonly prisma: PrismaService) { }
 
-    async create(data: CreateUserDTO) {
+    async create({email, name, password, birthAt}: CreateUserDTO) {
 
-        return /*await*/ this.prisma.user.create({
+        
+        const data: any = {};
+
+        if (birthAt) {
+            data.birthAt = new Date(birthAt);
+        }
+
+        if (email) {
+            data.email = email;
+        }
+
+        if (name) {
+            data.name = name;
+        }
+
+        if (password) {
+            data.password = password;
+        }
+
+        return this.prisma.user.create({
             data,
         });
     }
@@ -21,11 +40,15 @@ export class UserService {
     }
 
     async show(id: number) {
+
+        await this.exists(id);
+        
         return this.prisma.user.findUnique({
             where: {
                 id,
             }
         });
+
     }
 
     async update({ email, name, password, birthAt }: UpdatePutUserDTO, id: number) {
@@ -92,7 +115,11 @@ export class UserService {
 
     async exists(id: number) {
 
-        if (!(await this.show(id))) {
+        if( !(await this.prisma.user.count({
+            where:{
+                id
+            }
+        }))){
             throw new NotFoundException(`O usuário ${id} não existe.`);
         }
 
