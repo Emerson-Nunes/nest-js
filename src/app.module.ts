@@ -12,21 +12,23 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     AuthModule,
     ThrottlerModule.forRoot({
-      throttlers: [{
-        ttl: 60000, //Está em milissegundos
-        limit: 10 //Limite de requisições
-      }]
+      throttlers: [
+        {
+          ttl: 60000, //Está em milissegundos
+          limit: 10, //Limite de requisições
+        },
+      ],
     }),
-  ConfigModule.forRoot(),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+      useClass: ThrottlerGuard,
+    },
   ],
-  exports: [AppService]
+  exports: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
