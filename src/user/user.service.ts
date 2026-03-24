@@ -9,29 +9,30 @@ export class UserService {
 
     constructor(private readonly prisma: PrismaService) { }
 
-    async create({email, name, password, birthAt}: CreateUserDTO) {
+    async create(data: CreateUserDTO) {
 
-        const data: any = {};
+        // const data: any = {};
 
-        if (birthAt) {
-            data.birthAt = new Date(birthAt);
-        }
+        // if (birthAt) {
+        //     data.birthAt = new Date(birthAt);
+        // }
 
-        if (email) {
-            data.email = email;
-        }
+        // if (email) {
+        //     data.email = email;
+        // }
 
-        if (name) {
-            data.name = name;
-        }
+        // if (name) {
+        //     data.name = name;
+        // }
 
-        if (password) {
-            data.password = password;
-        }
+        // if (password) {
+        //     data.password = password;
+        // }
 
         return this.prisma.user.create({
             data,
         });
+
     }
 
     async list() {
@@ -41,7 +42,7 @@ export class UserService {
     async show(id: number) {
 
         await this.exists(id);
-        
+
         return this.prisma.user.findUnique({
             where: {
                 id,
@@ -50,7 +51,7 @@ export class UserService {
 
     }
 
-    async update({ email, name, password, birthAt }: UpdatePutUserDTO, id: number) {
+    async update({ email, name, password, birthAt, role }: UpdatePutUserDTO, id: number) {
 
         await this.exists(id);
 
@@ -61,7 +62,8 @@ export class UserService {
                 email,
                 name,
                 password,
-                birthAt: birthAt ? new Date(birthAt) : null
+                birthAt: birthAt ? new Date(birthAt) : null,
+                role
             },
             where: {
                 id,
@@ -69,7 +71,7 @@ export class UserService {
         });
     }
 
-    async updatePartial({ email, name, password, birthAt }: UpdatePatchUserDTO, id: number) {
+    async updatePartial({ email, name, password, birthAt, role }: UpdatePatchUserDTO, id: number) {
 
         await this.exists(id);
 
@@ -93,6 +95,10 @@ export class UserService {
             data.password = password;
         }
 
+        if (role) {
+            data.role = role;
+        }
+
         return this.prisma.user.update({
             data,
             where: {
@@ -114,11 +120,11 @@ export class UserService {
 
     async exists(id: number) {
 
-        if( !(await this.prisma.user.count({
-            where:{
+        if (!(await this.prisma.user.count({
+            where: {
                 id
             }
-        }))){
+        }))) {
             throw new NotFoundException(`O usuário ${id} não existe.`);
         }
 
