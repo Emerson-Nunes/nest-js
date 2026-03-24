@@ -3,31 +3,38 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
 
     constructor(private readonly prisma: PrismaService) { }
 
-    async create(data: CreateUserDTO) {
+    async create({ birthAt, email, name, password }: CreateUserDTO) {
 
-        // const data: any = {};
+        const data: any = {};
 
-        // if (birthAt) {
-        //     data.birthAt = new Date(birthAt);
-        // }
+        if (birthAt) {
+            data.birthAt = new Date(birthAt);
+        }
 
-        // if (email) {
-        //     data.email = email;
-        // }
+        if (email) {
+            data.email = email;
+        }
 
-        // if (name) {
-        //     data.name = name;
-        // }
+        if (name) {
+            data.name = name;
+        }
 
-        // if (password) {
-        //     data.password = password;
-        // }
+        if (password) {
+
+            const salt = await bcrypt.genSalt();
+
+            console.log({ salt });
+
+            data.password = await bcrypt.hash(password, salt);
+
+        }
 
         return this.prisma.user.create({
             data,
@@ -54,6 +61,12 @@ export class UserService {
     async update({ email, name, password, birthAt, role }: UpdatePutUserDTO, id: number) {
 
         await this.exists(id);
+
+        const salt = await bcrypt.genSalt();
+
+        console.log({ salt });
+
+        password = await bcrypt.hash(password, salt);
 
         // console.log({ email, name, password });
 
@@ -92,7 +105,13 @@ export class UserService {
         }
 
         if (password) {
-            data.password = password;
+
+            const salt = await bcrypt.genSalt();
+
+            console.log({ salt });
+
+            data.password = await bcrypt.hash(password, salt);
+
         }
 
         if (role) {
